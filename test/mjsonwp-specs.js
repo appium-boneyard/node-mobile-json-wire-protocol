@@ -1,6 +1,6 @@
 // transpile:mocha
 
-import { getExpressRouter } from '../..';
+import { routeConfiguringFunction } from '../..';
 import { FakeDriver } from './fake-driver';
 import { server } from 'appium-express';
 import request from 'request-promise';
@@ -32,7 +32,7 @@ describe('MJSONWP', () => {
     driver.sessionId = 'foo';
     let mjsonwpServer;
     before(async () => {
-      mjsonwpServer = await server(getExpressRouter(driver), 8181);
+      mjsonwpServer = await server(routeConfiguringFunction(driver), 8181);
     });
     after(async () => {
       mjsonwpServer.close();
