@@ -317,5 +317,18 @@ describe('MJSONWP', () => {
         sessionId: sessionId
       });
     });
+
+    it('should return a new session ID on create', async () => {
+
+      let res = await request({
+        url: `http://localhost:8181/wd/hub/session`,
+        method: 'POST',
+        json: {desiredCapabilities: 'hello', requiredCapabilities: 'bye'}
+      });
+
+      should.exist(res.sessionId);
+      res.sessionId.should.equal('1234');
+      res.value.should.equal('hello');
+    });
   });
 });

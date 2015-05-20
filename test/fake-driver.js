@@ -12,8 +12,9 @@ class FakeDriver extends MobileJsonWireProtocol {
     return sessionId === this.sessionId;
   }
 
-  async createSession () {
+  async createSession (caps) {
     this.sessionId = "1234";
+    return [this.sessionId, caps];
   }
 
   async deleteSession () {
