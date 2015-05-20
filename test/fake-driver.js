@@ -36,9 +36,7 @@ class FakeDriver extends MobileJsonWireProtocol {
     return sessionId;
   }
 
-  async forward () {
-
-  }
+  async forward () {}
 
   async refresh () {
     throw new Error('Too Fresh!');

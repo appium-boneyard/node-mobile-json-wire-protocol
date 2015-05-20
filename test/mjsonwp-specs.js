@@ -13,6 +13,10 @@ chai.use(chaiAsPromised);
 
 describe('MJSONWP', () => {
 
+  //TODO: more tests!:
+  // Unknown commands should return 404
+  // Unimplemented commands should return 501
+
   describe('direct to driver', () => {
     let d = new FakeDriver();
 
@@ -99,13 +103,16 @@ describe('MJSONWP', () => {
     });
 
     it('should respond with 400 Bad Request if parameters missing', async () => {
-      let res = request({
+      let res = await request({
         url: 'http://localhost:8181/wd/hub/session/foo/url',
         method: 'POST',
-        json: {}
+        json: {},
+        resolveWithFullResponse: true,
+        simple: false
       });
-      await res.should.eventually.be.rejectedWith("400");
-      await res.should.eventually.be.rejectedWith("url");
+
+      res.statusCode.should.equal(400);
+      res.body.should.contain("url");
     });
 
     it('should reject requests with a badly formatted body and not crash', async () => {
@@ -149,10 +156,23 @@ describe('MJSONWP', () => {
     });
 
     it('should throw not yet implemented for unfilledout commands', async () => {
-      await request({
+      let res = await request({
         url: 'http://localhost:8181/wd/hub/session/foo/element/bar/text',
-        method: 'GET'
-      }).should.eventually.be.rejectedWith("implemented");
+        method: 'GET',
+        json: true,
+        resolveWithFullResponse: true,
+        simple: false
+      });
+
+      res.statusCode.should.equal(500);
+      res.body.should.eql({
+        status: 13,
+        value: {
+          message: "Method has not yet been implemented"
+        },
+        sessionId: "foo"
+      });
+
     });
 
     it('should get 400 for bad parameters', async () => {
@@ -189,7 +209,8 @@ describe('MJSONWP', () => {
       res.body.should.eql({
         status: 13,
         value: {
-          message: 'An unknown server-side error occurred while processing the command.'
+          message: 'An unknown server-side error occurred while processing ' +
+                   'the command. Original error: Too Fresh!'
         },
         sessionId: "foo"
       });
@@ -219,7 +240,7 @@ describe('MJSONWP', () => {
         json: true,
       });
 
-      res.sessionId.should.be.null;
+      should.equal(res.sessionId, null);
     });
 
     it('responds with the same session ID in the request', async () => {
@@ -274,7 +295,7 @@ describe('MJSONWP', () => {
       driver.sessionId = sessionId;
 
       let res = await request({
-        url: 'http://localhost:8181/wd/hub/session/${sessionId}/refresh',
+        url: `http://localhost:8181/wd/hub/session/${sessionId}/refresh`,
         method: 'POST',
         json: true,
         resolveWithFullResponse: true,
@@ -285,7 +306,8 @@ describe('MJSONWP', () => {
       res.body.should.eql({
         status: 13,
         value: {
-          message: 'Too Fresh!'
+          message: 'An unknown server-side error occurred while processing ' +
+                   'the command. Original error: Too Fresh!'
         },
         sessionId: sessionId
       });
