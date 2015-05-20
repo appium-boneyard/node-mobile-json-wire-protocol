@@ -22,8 +22,14 @@ describe('MJSONWP', () => {
           shasum.update(method);
           if(methodMapping.command) shasum.update(methodMapping.command);
           if(methodMapping.payloadParams) {
-            for (let param of methodMapping.payloadParams) {
-              shasum.update(param);
+            for (let paramSet of methodMapping.payloadParams) {
+              if (!_.isArray(paramSet)) {
+                shasum.update(paramSet);
+              } else {
+                for (let param of paramSet) {
+                  shasum.update(param);
+                }
+              }
             }
           }
         }

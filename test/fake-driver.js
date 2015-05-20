@@ -59,6 +59,22 @@ class FakeDriver extends MobileJsonWireProtocol {
     return [elementId, sessionId];
   }
 
+  async implicitWait (ms) {
+    return ms;
+  }
+
+  async clickCurrent (button) {
+    return button;
+  }
+
+  async setNetworkConnection (type) {
+    return type;
+  }
+
+  async moveTo (element, xOffset, yOffset) {
+    return [element, xOffset, yOffset];
+  }
+
 }
 
 export { FakeDriver };

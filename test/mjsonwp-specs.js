@@ -174,6 +174,34 @@ describe('MJSONWP', () => {
       }).should.eventually.be.rejectedWith("400");
     });
 
+    describe('optional sets of arguments', async () => {
+      it('should allow moveto with element', async () => {
+        let res = await request({
+          url: 'http://localhost:8181/wd/hub/session/foo/moveto',
+          method: 'POST',
+          json: {element: '3'}
+        });
+        res.status.should.equal(0);
+        res.value.should.eql(['3', null, null]);
+      });
+      it('should allow moveto with xOffset/yOffset', async () => {
+        let res = await request({
+          url: 'http://localhost:8181/wd/hub/session/foo/moveto',
+          method: 'POST',
+          json: {xOffset: 42, yOffset: 17}
+        });
+        res.status.should.equal(0);
+        res.value.should.eql([null, 42, 17]);
+      });
+      it('should not allow moveto with neither element nor xOffset/yOffset', async () => {
+        await request({
+          url: 'http://localhost:8181/wd/hub/session/foo/moveto',
+          method: 'POST',
+          json: {}
+        }).should.eventually.be.rejectedWith('400');
+      });
+    });
+
     it('should handle commands with no response values', async () => {
       let res = await request({
         url: 'http://localhost:8181/wd/hub/session/foo/forward',
