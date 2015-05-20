@@ -20,6 +20,10 @@ class FakeDriver extends MobileJsonWireProtocol {
     this.sessionId = null;
   }
 
+  async getStatus () {
+    return "I'm fine";
+  }
+
   async setUrl (url) {
     return `Navigated to: ${url}`;
   }
@@ -32,9 +36,18 @@ class FakeDriver extends MobileJsonWireProtocol {
     return sessionId;
   }
 
+  async forward () {
+
+  }
+
+  async refresh () {
+    throw new Error('Too Fresh!');
+  }
+
   async click (elementId, sessionId) {
     return [elementId, sessionId];
   }
+
 }
 
 export { FakeDriver };
