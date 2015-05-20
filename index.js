@@ -1,6 +1,5 @@
 // transpile:main
 
-import { MJSONWP as MobileJsonWireProtocol, getExpressRouter } from './lib/mjsonwp';
+import { MJSONWP as MobileJsonWireProtocol, routeConfiguringFunction } from './lib/mjsonwp';
 
-export { MobileJsonWireProtocol, getExpressRouter };
-
+export { MobileJsonWireProtocol, routeConfiguringFunction };
