@@ -15,7 +15,6 @@ describe('MJSONWP', () => {
 
   //TODO: more tests!:
   // Unknown commands should return 404
-  // Unimplemented commands should return 501
 
   describe('direct to driver', () => {
     let d = new FakeDriver();
@@ -164,15 +163,21 @@ describe('MJSONWP', () => {
         simple: false
       });
 
-      res.statusCode.should.equal(500);
-      res.body.should.eql({
-        status: 13,
-        value: {
-          message: "Method has not yet been implemented"
-        },
-        sessionId: "foo"
+      res.statusCode.should.equal(501);
+      res.body.should.contain("implemented");
+    });
+
+    it('should throw not implemented for ignored commands', async () => {
+      let res = await request({
+        url: 'http://localhost:8181/wd/hub/session/foo/buttonup',
+        method: 'POST',
+        json: {},
+        resolveWithFullResponse: true,
+        simple: false
       });
 
+      res.statusCode.should.equal(501);
+      res.body.should.contain("implemented");
     });
 
     it('should get 400 for bad parameters', async () => {
