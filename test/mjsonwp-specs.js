@@ -82,5 +82,12 @@ describe('MJSONWP', () => {
         method: 'GET'
       }).should.eventually.be.rejectedWith("implemented");
     });
+    it('should get 400 for bad parameters', async () => {
+      await request({
+        url: 'http://localhost:8181/wd/hub/session/foo/url',
+        method: 'POST',
+        json: {}
+      }).should.eventually.be.rejectedWith("400");
+    });
   });
 });
