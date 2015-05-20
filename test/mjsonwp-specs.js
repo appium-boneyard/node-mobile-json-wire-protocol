@@ -29,6 +29,7 @@ describe('MJSONWP', () => {
 
   describe('via express router', () => {
     let driver = new FakeDriver();
+    driver.sessionId = 'foo';
     let mjsonwpServer;
     before(async () => {
       mjsonwpServer = await server(getExpressRouter(driver), 8181);
@@ -44,7 +45,8 @@ describe('MJSONWP', () => {
       });
       res.should.eql({
         status: 0,
-        value: "Navigated to: http://google.com"
+        value: "Navigated to: http://google.com",
+        sessionId: "foo"
       });
     });
     it('should include url request parameters for methods to use - sessionid', async () => {
@@ -55,7 +57,8 @@ describe('MJSONWP', () => {
       });
       res.should.eql({
         status: 0,
-        value: "foo"
+        value: "foo",
+        sessionId: "foo"
       });
     });
     it('should include url request parameters for methods to use - elementid', async () => {
