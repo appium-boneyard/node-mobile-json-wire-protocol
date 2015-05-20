@@ -1,6 +1,6 @@
 // transpile:mocha
 
-import { _ } from 'underscore';
+import { _ } from 'lodash';
 import { METHOD_MAP } from '../lib/routes';
 import { default as crypto } from 'crypto';
 import chai from 'chai';
