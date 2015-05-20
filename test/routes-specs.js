@@ -10,6 +10,9 @@ chai.should();
 
 describe('MJSONWP', () => {
 
+  // TODO test against an explicit protocol rather than a hash of a previous
+  // protocol
+
   describe('ensure protocol consistency', () => {
     it('should not change protocol between patch versions', async () => {
       var shasum = crypto.createHash('sha1');
