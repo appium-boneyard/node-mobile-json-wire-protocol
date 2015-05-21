@@ -187,7 +187,7 @@ describe('MJSONWP', () => {
       });
     });
 
-    it('should send 500 response and an error object for rejected commands', async () => {
+    it('should send 500 response and an Unknown object for rejected commands', async () => {
       let res = await request({
         url: 'http://localhost:8181/wd/hub/session/foo/refresh',
         method: 'POST',
@@ -202,6 +202,25 @@ describe('MJSONWP', () => {
         value: {
           message: 'An unknown server-side error occurred while processing ' +
                    'the command. Original error: Too Fresh!'
+        },
+        sessionId: "foo"
+      });
+    });
+
+    it('should not throw UnknownError when known', async () => {
+      let res = await request({
+        url: 'http://localhost:8181/wd/hub/session/foo',
+        method: 'GET',
+        json: true,
+        resolveWithFullResponse: true,
+        simple: false
+      });
+
+      res.statusCode.should.equal(500);
+      res.body.should.eql({
+        status: 6,
+        value: {
+          message: 'A session is either terminated or not started'
         },
         sessionId: "foo"
       });

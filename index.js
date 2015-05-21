@@ -1,6 +1,11 @@
 // transpile:main
 
-import { MJSONWP as MobileJsonWireProtocol, routeConfiguringFunction } from './lib/mjsonwp';
+import { MJSONWP as MobileJsonWireProtocol,
+         routeConfiguringFunction } from './lib/mjsonwp';
+import { NO_SESSION_ID_COMMANDS } from './lib/routes';
 import { errors } from './lib/errors';
 
-export { MobileJsonWireProtocol, routeConfiguringFunction, errors };
+export { MobileJsonWireProtocol,
+         routeConfiguringFunction,
+         errors,
+         NO_SESSION_ID_COMMANDS };

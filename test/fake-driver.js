@@ -51,6 +51,10 @@ class FakeDriver extends MobileJsonWireProtocol {
     throw new Error('Too Fresh!');
   }
 
+  async getSession () {
+    throw new errors.NoSuchDriverError();
+  }
+
   async click (elementId, sessionId) {
     return [elementId, sessionId];
   }
