@@ -18,25 +18,9 @@ describe('MJSONWP', () => {
 
   describe('direct to driver', () => {
     let d = new FakeDriver();
-
     it('should return response values directly from the driver', async () => {
       (await d.setUrl("http://google.com")).should.contain("google");
     });
-
-    it('should validate params when using validated_', async () => {
-      await d.validated_setUrl().should.eventually.be.rejectedWith(/url/i);
-      await d.validated_setUrl("foo").should.eventually.be.rejectedWith(/url/i);
-    });
-
-    it('should not care if we dont have a validated_ fn', async () => {
-      await d.validated_getUrl().should.eventually.equal("http://foobar.com");
-    });
-
-    it('unimplemented validated commands should throw NotImplemented errors', async () => {
-      should.not.exist(d.getText);
-      await d.validated_getText().should.eventually.be.rejectedWith('implemented');
-    });
-
   });
 
   describe('via express router', () => {
@@ -82,9 +66,11 @@ describe('MJSONWP', () => {
       let res = await request({
         url: 'http://localhost:8181/wd/hub/session/foo/back',
         method: 'POST',
-        json: {}
+        json: {},
+        simple: false,
+        resolveWithFullResponse: true
       });
-      res.should.eql({
+      res.body.should.eql({
         status: 0,
         value: "foo",
         sessionId: "foo"

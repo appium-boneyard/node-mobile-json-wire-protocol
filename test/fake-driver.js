@@ -1,3 +1,4 @@
+import { errors } from '../..';
 import { MobileJsonWireProtocol } from '../..';
 
 class FakeDriver extends MobileJsonWireProtocol {
@@ -15,6 +16,13 @@ class FakeDriver extends MobileJsonWireProtocol {
   async createSession (caps) {
     this.sessionId = "1234";
     return [this.sessionId, caps];
+  }
+
+  async execute (cmd, ...args) {
+    if (!this[cmd]) {
+      throw new errors.NotYetImplementedError();
+    }
+    return await this[cmd](...args);
   }
 
   async deleteSession () {
