@@ -3,6 +3,7 @@
 import { routeConfiguringFunction } from '../..';
 import { FakeDriver } from './fake-driver';
 import { server } from 'appium-express';
+import _ from 'lodash';
 import request from 'request-promise';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -174,6 +175,77 @@ describe('MJSONWP', () => {
       }).should.eventually.be.rejectedWith("400");
     });
 
+    describe('multiple sets of arguments', async () => {
+      it('should allow moveto with element', async () => {
+        let res = await request({
+          url: 'http://localhost:8181/wd/hub/session/foo/moveto',
+          method: 'POST',
+          json: {element: '3'}
+        });
+        res.status.should.equal(0);
+        res.value.should.eql(['3', null, null]);
+      });
+      it('should allow moveto with xOffset/yOffset', async () => {
+        let res = await request({
+          url: 'http://localhost:8181/wd/hub/session/foo/moveto',
+          method: 'POST',
+          json: {xOffset: 42, yOffset: 17}
+        });
+        res.status.should.equal(0);
+        res.value.should.eql([null, 42, 17]);
+      });
+      it('should not allow moveto with neither element nor xOffset/yOffset', async () => {
+        await request({
+          url: 'http://localhost:8181/wd/hub/session/foo/moveto',
+          method: 'POST',
+          json: {}
+        }).should.eventually.be.rejectedWith('400');
+      });
+    });
+
+    describe('optional sets of arguments', async () => {
+      let desiredCapabilities = {a: 'b'};
+      let requiredCapabilities = {c: 'd'};
+      it('should allow create session with desired caps', async () => {
+        let res = await request({
+          url: 'http://localhost:8181/wd/hub/session',
+          method: 'POST',
+          json: {desiredCapabilities: desiredCapabilities}
+        });
+        res.status.should.equal(0);
+        res.value.should.eql(desiredCapabilities);
+      });
+      it('should allow create session with desired and required caps', async () => {
+        let res = await request({
+          url: 'http://localhost:8181/wd/hub/session',
+          method: 'POST',
+          json: {
+            desiredCapabilities: desiredCapabilities,
+            requiredCapabilities: requiredCapabilities
+          }
+        });
+        res.status.should.equal(0);
+        res.value.should.eql(_.extend({}, desiredCapabilities, requiredCapabilities));
+      });
+      it('should fail to create session without desired caps', async () => {
+        await request({
+          url: 'http://localhost:8181/wd/hub/session',
+          method: 'POST',
+          json: {}
+        }).should.eventually.be.rejectedWith('400');
+      });
+      it('should fail to create session with desired caps and random other stuff', async () => {
+        await request({
+          url: 'http://localhost:8181/wd/hub/session',
+          method: 'POST',
+          json: {
+            desiredCapabilities: desiredCapabilities,
+            randomCapabilitied: {z: '-a'}
+          }
+        }).should.eventually.be.rejectedWith('400');
+      });
+    });
+
     it('should handle commands with no response values', async () => {
       let res = await request({
         url: 'http://localhost:8181/wd/hub/session/foo/forward',
@@ -326,14 +398,14 @@ describe('MJSONWP', () => {
     it('should return a new session ID on create', async () => {
 
       let res = await request({
-        url: `http://localhost:8181/wd/hub/session`,
+        url: 'http://localhost:8181/wd/hub/session',
         method: 'POST',
-        json: {desiredCapabilities: 'hello', requiredCapabilities: 'bye'}
+        json: {desiredCapabilities: {greeting: 'hello'}, requiredCapabilities: {valediction: 'bye'}}
       });
 
       should.exist(res.sessionId);
       res.sessionId.should.equal('1234');
-      res.value.should.equal('hello');
+      res.value.should.eql({greeting: 'hello', valediction: 'bye'});
     });
   });
 });

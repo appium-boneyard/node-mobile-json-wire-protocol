@@ -1,4 +1,5 @@
 import { errors } from '../..';
+import _ from 'lodash';
 import { MobileJsonWireProtocol } from '../..';
 
 class FakeDriver extends MobileJsonWireProtocol {
@@ -13,9 +14,11 @@ class FakeDriver extends MobileJsonWireProtocol {
     return sessionId === this.sessionId;
   }
 
-  async createSession (caps) {
+  async createSession (desiredCapabilities, requiredCapabilities={}) {
     this.sessionId = "1234";
-    return [this.sessionId, caps];
+    this.desiredCapabilities = desiredCapabilities;
+    this.requiredCapabilities = requiredCapabilities;
+    return [this.sessionId, _.extend({}, desiredCapabilities, requiredCapabilities)];
   }
 
   async execute (cmd, ...args) {
@@ -57,6 +60,22 @@ class FakeDriver extends MobileJsonWireProtocol {
 
   async click (elementId, sessionId) {
     return [elementId, sessionId];
+  }
+
+  async implicitWait (ms) {
+    return ms;
+  }
+
+  async clickCurrent (button) {
+    return button;
+  }
+
+  async setNetworkConnection (type) {
+    return type;
+  }
+
+  async moveTo (element, xOffset, yOffset) {
+    return [element, xOffset, yOffset];
   }
 
 }
