@@ -78,6 +78,10 @@ class FakeDriver extends MobileJsonWireProtocol {
     return [element, xOffset, yOffset];
   }
 
+  async getText () {
+    return "";
+  }
+
 }
 
 export { FakeDriver };

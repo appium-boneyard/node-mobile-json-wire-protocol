@@ -143,7 +143,7 @@ describe('MJSONWP', () => {
 
     it('should throw not yet implemented for unfilledout commands', async () => {
       let res = await request({
-        url: 'http://localhost:8181/wd/hub/session/foo/element/bar/text',
+        url: 'http://localhost:8181/wd/hub/session/foo/element/bar/location',
         method: 'GET',
         json: true,
         resolveWithFullResponse: true,
@@ -255,6 +255,19 @@ describe('MJSONWP', () => {
       res.should.eql({
         status: 0,
         value: null,
+        sessionId: "foo"
+      });
+    });
+
+    it('should allow empty string response values', async () => {
+      let res = await request({
+        url: 'http://localhost:8181/wd/hub/session/foo/element/bar/text',
+        method: 'GET',
+        json: true,
+      });
+      res.should.eql({
+        status: 0,
+        value: "",
         sessionId: "foo"
       });
     });
