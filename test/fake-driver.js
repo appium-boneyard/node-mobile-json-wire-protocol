@@ -82,6 +82,10 @@ class FakeDriver extends MobileJsonWireProtocol {
     return "";
   }
 
+  async getAttribute (attr, elementId, sessionId) {
+    return [attr, elementId, sessionId];
+  }
+
 }
 
 export { FakeDriver };

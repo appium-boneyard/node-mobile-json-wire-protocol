@@ -88,6 +88,17 @@ describe('MJSONWP', () => {
       res.value.should.eql(["bar", "foo"]);
     });
 
+    it('should include url req params in the order: custom, element, session', async () => {
+      let res = await request({
+        url: 'http://localhost:8181/wd/hub/session/foo/element/bar/attribute/baz',
+        method: 'GET',
+        json: {}
+      });
+      res.status.should.equal(0);
+      res.value.should.eql(["baz", "bar", "foo"]);
+
+    });
+
     it('should respond with 400 Bad Request if parameters missing', async () => {
       let res = await request({
         url: 'http://localhost:8181/wd/hub/session/foo/url',
