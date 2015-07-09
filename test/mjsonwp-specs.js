@@ -511,5 +511,51 @@ describe('MJSONWP', () => {
       res.statusCode.should.equal(200);
       res.body.should.eql({custom: 'data'});
     });
+
+    it('should avoid jsonwp proxying when path matches avoidance list', async () => {
+      driver.jwpProxyActive = true;
+      driver.jwpProxyAvoid = [['GET', /^\/status$/]];
+      let res = await request({
+        url: `http://localhost:8181/wd/hub/status`,
+        method: 'GET',
+        json: true,
+        resolveWithFullResponse: true,
+        simple: false
+      });
+
+      res.statusCode.should.equal(200);
+      res.body.should.eql({
+        status: 0,
+        value: "I'm fine",
+        sessionId: null
+      });
+    });
+
+    it('should fail if avoid proxy list is malformed in some way', async () => {
+      async function badProxyAvoidanceList (list) {
+        driver.jwpProxyActive = true;
+        driver.jwpProxyAvoid = list;
+        let res = await request({
+          url: `http://localhost:8181/wd/hub/status`,
+          method: 'GET',
+          json: true,
+          resolveWithFullResponse: true,
+          simple: false
+        });
+
+        res.statusCode.should.equal(500);
+        res.body.status.should.equal(13);
+        res.body.value.message.should.contain("roxy");
+      }
+      const lists = [
+        'foo',
+        [['foo']],
+        [['BAR', /lol/]],
+        [['GET', 'foo']]
+      ];
+      for (let list of lists) {
+        await badProxyAvoidanceList(list);
+      }
+    });
   });
 });
