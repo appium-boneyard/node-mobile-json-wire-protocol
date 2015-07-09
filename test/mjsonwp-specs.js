@@ -434,10 +434,9 @@ describe('MJSONWP', () => {
   });
 
   describe('via drivers jsonwp proxy', () => {
-    //function buildReqHandler (req, res) {
-    //}
-
     let driver = new FakeDriver();
+    let sessionId = 'foo';
+    driver.sessionId = sessionId;
     let mjsonwpServer;
 
     before(async () => {
@@ -451,9 +450,9 @@ describe('MJSONWP', () => {
     it('should give a nice error if proxying is set but no proxy function exists', async () => {
       driver.jwpProxyActive = true;
       let res = await request({
-        url: `http://localhost:8181/wd/hub/status`,
-        method: 'GET',
-        json: true,
+        url: `http://localhost:8181/wd/hub/session/${sessionId}/url`,
+        method: 'POST',
+        json: {url: 'http://google.com'},
         resolveWithFullResponse: true,
         simple: false
       });
@@ -466,7 +465,7 @@ describe('MJSONWP', () => {
                    'the command. Original error: Trying to proxy to a JSONWP ' +
                    'server but proxyReqRes is not defined'
         },
-        sessionId: null
+        sessionId
       });
     });
 
@@ -476,9 +475,9 @@ describe('MJSONWP', () => {
         throw new Error("foo");
       };
       let res = await request({
-        url: `http://localhost:8181/wd/hub/status`,
-        method: 'GET',
-        json: true,
+        url: `http://localhost:8181/wd/hub/session/${sessionId}/url`,
+        method: 'POST',
+        json: {url: 'http://google.com'},
         resolveWithFullResponse: true,
         simple: false
       });
@@ -491,7 +490,7 @@ describe('MJSONWP', () => {
                    'the command. Original error: Could not proxy. Proxy ' +
                    'error: foo'
         },
-        sessionId: null
+        sessionId
       });
     });
 
@@ -501,9 +500,9 @@ describe('MJSONWP', () => {
         res.status(200).json({custom: 'data'});
       };
       let res = await request({
-        url: `http://localhost:8181/wd/hub/status`,
-        method: 'GET',
-        json: true,
+        url: `http://localhost:8181/wd/hub/session/${sessionId}/url`,
+        method: 'POST',
+        json: {url: 'http://google.com'},
         resolveWithFullResponse: true,
         simple: false
       });
@@ -514,11 +513,11 @@ describe('MJSONWP', () => {
 
     it('should avoid jsonwp proxying when path matches avoidance list', async () => {
       driver.jwpProxyActive = true;
-      driver.jwpProxyAvoid = [['GET', /^\/status$/]];
+      driver.jwpProxyAvoid = [['POST', new RegExp('^/session/[^/]+/url$')]];
       let res = await request({
-        url: `http://localhost:8181/wd/hub/status`,
-        method: 'GET',
-        json: true,
+        url: `http://localhost:8181/wd/hub/session/${sessionId}/url`,
+        method: 'POST',
+        json: {url: 'http://google.com'},
         resolveWithFullResponse: true,
         simple: false
       });
@@ -526,8 +525,8 @@ describe('MJSONWP', () => {
       res.statusCode.should.equal(200);
       res.body.should.eql({
         status: 0,
-        value: "I'm fine",
-        sessionId: null
+        value: "Navigated to: http://google.com",
+        sessionId
       });
     });
 
@@ -536,9 +535,9 @@ describe('MJSONWP', () => {
         driver.jwpProxyActive = true;
         driver.jwpProxyAvoid = list;
         let res = await request({
-          url: `http://localhost:8181/wd/hub/status`,
-          method: 'GET',
-          json: true,
+          url: `http://localhost:8181/wd/hub/session/${sessionId}/url`,
+          method: 'POST',
+          json: {url: 'http://google.com'},
           resolveWithFullResponse: true,
           simple: false
         });
@@ -556,6 +555,26 @@ describe('MJSONWP', () => {
       for (let list of lists) {
         await badProxyAvoidanceList(list);
       }
+    });
+
+    it('should avoid proxying non-session commands even if not in the list', async () => {
+      driver.jwpProxyActive = true;
+      driver.jwpProxyAvoid = [['POST', new RegExp('')]];
+
+      let res = await request({
+        url: `http://localhost:8181/wd/hub/status`,
+        method: 'GET',
+        json: true,
+        resolveWithFullResponse: true,
+        simple: false
+      });
+
+      res.statusCode.should.equal(200);
+      res.body.should.eql({
+        status: 0,
+        value: "I'm fine",
+        sessionId: null
+      });
     });
   });
 });
