@@ -432,4 +432,84 @@ describe('MJSONWP', () => {
       res.value.should.eql({greeting: 'hello', valediction: 'bye'});
     });
   });
+
+  describe('via drivers jsonwp proxy', () => {
+    //function buildReqHandler (req, res) {
+    //}
+
+    let driver = new FakeDriver();
+    let mjsonwpServer;
+
+    before(async () => {
+      mjsonwpServer = await server(routeConfiguringFunction(driver), 8181);
+    });
+
+    after(async () => {
+      mjsonwpServer.close();
+    });
+
+    it('should give a nice error if proxying is set but no proxy function exists', async () => {
+      driver.jwpProxyActive = true;
+      let res = await request({
+        url: `http://localhost:8181/wd/hub/status`,
+        method: 'GET',
+        json: true,
+        resolveWithFullResponse: true,
+        simple: false
+      });
+
+      res.statusCode.should.equal(500);
+      res.body.should.eql({
+        status: 13,
+        value: {
+          message: 'An unknown server-side error occurred while processing ' +
+                   'the command. Original error: Trying to proxy to a JSONWP ' +
+                   'server but proxyReqRes is not defined'
+        },
+        sessionId: null
+      });
+    });
+
+    it('should pass on any errors in proxying', async () => {
+      driver.jwpProxyActive = true;
+      driver.proxyReqRes = async function () {
+        throw new Error("foo");
+      };
+      let res = await request({
+        url: `http://localhost:8181/wd/hub/status`,
+        method: 'GET',
+        json: true,
+        resolveWithFullResponse: true,
+        simple: false
+      });
+
+      res.statusCode.should.equal(500);
+      res.body.should.eql({
+        status: 13,
+        value: {
+          message: 'An unknown server-side error occurred while processing ' +
+                   'the command. Original error: Could not proxy. Proxy ' +
+                   'error: foo'
+        },
+        sessionId: null
+      });
+    });
+
+    it('should let the proxy handle req/res', async () => {
+      driver.jwpProxyActive = true;
+      driver.proxyReqRes = async function (req, res) {
+        res.status(200).json({custom: 'data'});
+      };
+      let res = await request({
+        url: `http://localhost:8181/wd/hub/status`,
+        method: 'GET',
+        json: true,
+        resolveWithFullResponse: true,
+        simple: false
+      });
+
+      res.statusCode.should.equal(200);
+      res.body.should.eql({custom: 'data'});
+    });
+  });
 });
