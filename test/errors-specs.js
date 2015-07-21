@@ -1,4 +1,4 @@
-import { errors, errorFromCode } from '../lib/errors.js';
+import { errors, errorFromCode } from '../index';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
@@ -125,4 +125,11 @@ describe('errorFromCode', () => {
       });
     }
   }
+  it('should throw unknown error for unknown code', () => {
+    errorFromCode(99)
+      .should.have.property('jsonwpCode', 13);
+    errorFromCode(99)
+      .should.have.property('message', 'An unknown server-side error occurred ' +
+                                       'while processing the command.');
+  });
 });
