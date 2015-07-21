@@ -1,4 +1,4 @@
-import { errors } from '../lib/errors.js';
+import { errors, errorFromCode } from '../lib/errors.js';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
@@ -113,4 +113,16 @@ describe('errors', () => {
     new errors.BadParametersError()
       .should.have.property('message');
   });
+});
+describe('errorFromCode', () => {
+  for (let error of errorsList) {
+    if (error.errorName !== 'NotYetImplementedError') {
+      it(error.errorCode + ' should return correct error', () => {
+        errorFromCode(error.errorCode)
+          .should.have.property('jsonwpCode', error.errorCode);
+        errorFromCode(error.errorCode)
+          .should.have.property('message', error.errorMsg);
+      });
+    }
+  }
 });
