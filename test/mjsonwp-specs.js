@@ -12,7 +12,7 @@ import 'mochawait';
 let should = chai.should();
 chai.use(chaiAsPromised);
 
-describe('MJSONWP', () => {
+describe('MJSONWP', async () => {
 
   //TODO: more tests!:
   // Unknown commands should return 404
@@ -25,11 +25,12 @@ describe('MJSONWP', () => {
   });
 
   describe('via express router', () => {
-    let driver = new FakeDriver();
-    driver.sessionId = 'foo';
     let mjsonwpServer;
+    let driver;
 
     before(async () => {
+      driver = new FakeDriver();
+      driver.sessionId = 'foo';
       mjsonwpServer = await server(routeConfiguringFunction(driver), 8181);
     });
 
@@ -186,7 +187,7 @@ describe('MJSONWP', () => {
       }).should.eventually.be.rejectedWith("400");
     });
 
-    describe('multiple sets of arguments', async () => {
+    describe('multiple sets of arguments', () => {
       it('should allow moveto with element', async () => {
         let res = await request({
           url: 'http://localhost:8181/wd/hub/session/foo/moveto',
@@ -212,6 +213,28 @@ describe('MJSONWP', () => {
           json: {}
         }).should.eventually.be.rejectedWith('400');
       });
+    });
+
+    describe('default param wrap', () => {
+
+      it('should wrap', async () => {
+        let res = await request({
+          url: 'http://localhost:8181/wd/hub/session/foo/touch/perform',
+          method: 'POST',
+          json: [{"action":"tap","options":{"element":"3"}}]
+        });
+        res.value.should.deep.equal([[{"action":"tap","options":{"element":"3"}}], 'foo']);
+      });
+
+      it('should not wrap twice', async () => {
+        let res = await request({
+          url: 'http://localhost:8181/wd/hub/session/foo/touch/perform',
+          method: 'POST',
+          json: {gestures: [{"action":"tap","options":{"element":"3"}}]}
+        });
+        res.value.should.deep.equal([[{"action":"tap","options":{"element":"3"}}], 'foo']);
+      });
+
     });
 
     describe('optional sets of arguments', async () => {
