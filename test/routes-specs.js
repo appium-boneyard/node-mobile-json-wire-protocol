@@ -29,12 +29,16 @@ describe('MJSONWP', () => {
             for (let param of allParams) {
               shasum.update(param);
             }
+            if (methodMapping.payloadParams.wrap) {
+              shasum.update('skip');
+              shasum.update(methodMapping.payloadParams.wrap);
+            }
           }
         }
       }
       var hash = shasum.digest('hex').substring(0, 8);
       // Modify the hash whenever the protocol has intentionally been modified.
-      hash.should.equal('4f102aba');
+      hash.should.equal('3135f259');
     });
   });
 
