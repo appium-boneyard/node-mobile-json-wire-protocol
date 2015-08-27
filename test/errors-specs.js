@@ -1,6 +1,7 @@
 import { errors, errorFromCode } from '../index';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import _ from 'lodash';
 
 chai.use(chaiAsPromised);
 
@@ -122,6 +123,12 @@ describe('errorFromCode', () => {
           .should.have.property('jsonwpCode', error.errorCode);
         errorFromCode(error.errorCode)
           .should.have.property('message', error.errorMsg);
+        if(!_.includes([13, 33],error.errorCode)) {
+          errorFromCode(error.errorCode, 'abcd')
+            .should.have.property('jsonwpCode', error.errorCode);
+          errorFromCode(error.errorCode, 'abcd')
+            .should.have.property('message', 'abcd');
+        }
       });
     }
   }
