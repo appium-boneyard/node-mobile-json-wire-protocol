@@ -76,9 +76,6 @@ describe('MJSONWP', () => {
       });
     });
     describe('clickCurrent', () => {
-      it('should fail when given no button', async () => {
-        (() => {validators.clickCurrent();}).should.throw(/0, 1, or 2/i);
-      });
       it('should fail when given an invalid button', async () => {
         (() => {validators.clickCurrent(4);}).should.throw(/0, 1, or 2/i);
       });
