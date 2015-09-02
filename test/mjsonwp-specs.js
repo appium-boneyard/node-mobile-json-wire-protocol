@@ -592,5 +592,23 @@ describe('MJSONWP', async () => {
         sessionId: null
       });
     });
+
+    it('should avoid proxying deleteSession commands', async () => {
+      driver.jwpProxyActive = true;
+      driver.jwpProxyAvoid = [['POST', new RegExp('')]];
+
+      driver.sessionId.should.equal(sessionId);
+      let res = await request({
+        url: `http://localhost:8181/wd/hub/session/${sessionId}`,
+        method: 'DELETE',
+        json: true,
+        resolveWithFullResponse: true,
+        simple: false
+      });
+
+      res.statusCode.should.equal(200);
+      should.not.exist(driver.sessionId);
+      driver.jwpProxyActive.should.be.false;
+    });
   });
 });

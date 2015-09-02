@@ -30,6 +30,7 @@ class FakeDriver extends MobileJsonWireProtocol {
   }
 
   async deleteSession () {
+    this.jwpProxyActive = false;
     this.sessionId = null;
   }
 
