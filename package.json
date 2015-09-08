@@ -9,10 +9,10 @@
   "license": "Apache License 2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/appium/mobile-json-wire-protocol.git"
+    "url": "https://github.com/appium/node-mobile-json-wire-protocol.git"
   },
   "bugs": {
-    "url": "https://github.com/appium/mobile-json-wire-protocol/issues"
+    "url": "https://github.com/appium/node-mobile-json-wire-protocol/issues"
   },
   "engines": [
     "node"
