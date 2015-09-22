@@ -2,7 +2,7 @@
 
 import { validators } from '../lib/validators';
 import chai from 'chai';
-import 'mochawait';
+
 
 chai.should();
 
