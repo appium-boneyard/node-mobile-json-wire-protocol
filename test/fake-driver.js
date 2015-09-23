@@ -1,6 +1,6 @@
-import { errors } from '../..';
+import { errors } from '../index';
 import _ from 'lodash';
-import { MobileJsonWireProtocol } from '../..';
+import { MobileJsonWireProtocol } from '../index';
 
 class FakeDriver extends MobileJsonWireProtocol {
 
