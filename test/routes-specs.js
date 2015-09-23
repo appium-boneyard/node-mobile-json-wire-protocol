@@ -4,7 +4,7 @@ import { _ } from 'lodash';
 import { METHOD_MAP } from '../lib/routes';
 import { default as crypto } from 'crypto';
 import chai from 'chai';
-import 'mochawait';
+
 
 chai.should();
 
@@ -38,7 +38,7 @@ describe('MJSONWP', () => {
       }
       var hash = shasum.digest('hex').substring(0, 8);
       // Modify the hash whenever the protocol has intentionally been modified.
-      hash.should.equal('84f0f0fa');
+      hash.should.equal('2fe7488e');
     });
   });
 

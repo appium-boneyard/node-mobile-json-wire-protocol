@@ -7,7 +7,7 @@ import _ from 'lodash';
 import request from 'request-promise';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import 'mochawait';
+
 
 let should = chai.should();
 chai.use(chaiAsPromised);
@@ -163,7 +163,13 @@ describe('MJSONWP', async () => {
       });
 
       res.statusCode.should.equal(501);
-      res.body.should.contain("implemented");
+      res.body.should.eql({
+        status: 13,
+        value: {
+          message: 'Method has not yet been implemented'
+        },
+        sessionId: 'foo'
+      });
     });
 
     it('should throw not implemented for ignored commands', async () => {
@@ -176,7 +182,13 @@ describe('MJSONWP', async () => {
       });
 
       res.statusCode.should.equal(501);
-      res.body.should.contain("implemented");
+      res.body.should.eql({
+        status: 13,
+        value: {
+          message: 'Method is not implemented'
+        },
+        sessionId: 'foo'
+      });
     });
 
     it('should get 400 for bad parameters', async () => {
