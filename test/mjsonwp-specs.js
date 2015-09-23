@@ -1,6 +1,6 @@
 // transpile:mocha
 
-import { routeConfiguringFunction } from '../..';
+import { routeConfiguringFunction } from '../index';
 import { FakeDriver } from './fake-driver';
 import { server } from 'appium-express';
 import _ from 'lodash';
