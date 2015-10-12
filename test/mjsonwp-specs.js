@@ -235,7 +235,7 @@ describe('MJSONWP', async () => {
         let res = await request({
           url: 'http://localhost:8181/wd/hub/session/foo/touch/perform',
           method: 'POST',
-          json: {gestures: [{"action":"tap","options":{"element":"3"}}]}
+          json: {actions: [{"action":"tap","options":{"element":"3"}}]}
         });
         res.value.should.deep.equal([[{"action":"tap","options":{"element":"3"}}], 'foo']);
       });
