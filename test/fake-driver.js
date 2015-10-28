@@ -26,7 +26,7 @@ class FakeDriver extends MobileJsonWireProtocol {
     return [this.sessionId, _.extend({}, desiredCapabilities, requiredCapabilities)];
   }
 
-  async execute (cmd, ...args) {
+  async executeCommand (cmd, ...args) {
     if (!this[cmd]) {
       throw new errors.NotYetImplementedError();
     }
