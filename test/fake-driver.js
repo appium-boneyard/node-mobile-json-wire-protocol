@@ -96,7 +96,17 @@ class FakeDriver extends MobileJsonWireProtocol {
     return args;
   }
 
+  proxyActive (/*sessionId*/) {
+    return false;
+  }
 
+  getProxyAvoidList (/*sessionId*/) {
+    return [];
+  }
+
+  canProxy (/*sessionId*/) {
+    return false;
+  }
 }
 
 export { FakeDriver };
