@@ -462,21 +462,25 @@ describe('MJSONWP', async () => {
   });
 
   describe('via drivers jsonwp proxy', () => {
-    let driver = new FakeDriver();
+    let driver;
     let sessionId = 'foo';
-    driver.sessionId = sessionId;
     let mjsonwpServer;
 
-    before(async () => {
+    beforeEach(async () => {
+      driver = new FakeDriver();
+      driver.sessionId = sessionId;
+      driver.proxyActive = () => { return true; };
+      driver.canProxy = () => { return true; };
+
       mjsonwpServer = await server(routeConfiguringFunction(driver), 8181);
     });
 
-    after(async () => {
+    afterEach(async () => {
       mjsonwpServer.close();
     });
 
     it('should give a nice error if proxying is set but no proxy function exists', async () => {
-      driver.jwpProxyActive = true;
+      driver.canProxy = () => { return false; };
       let res = await request({
         url: `http://localhost:8181/wd/hub/session/${sessionId}/url`,
         method: 'POST',
@@ -491,14 +495,13 @@ describe('MJSONWP', async () => {
         value: {
           message: 'An unknown server-side error occurred while processing ' +
                    'the command. Original error: Trying to proxy to a JSONWP ' +
-                   'server but proxyReqRes is not defined'
+                   'server but driver is unable to proxy'
         },
         sessionId
       });
     });
 
     it('should pass on any errors in proxying', async () => {
-      driver.jwpProxyActive = true;
       driver.proxyReqRes = async function () {
         throw new Error("foo");
       };
@@ -523,7 +526,6 @@ describe('MJSONWP', async () => {
     });
 
     it('should let the proxy handle req/res', async () => {
-      driver.jwpProxyActive = true;
       driver.proxyReqRes = async function (req, res) {
         res.status(200).json({custom: 'data'});
       };
@@ -540,8 +542,7 @@ describe('MJSONWP', async () => {
     });
 
     it('should avoid jsonwp proxying when path matches avoidance list', async () => {
-      driver.jwpProxyActive = true;
-      driver.jwpProxyAvoid = [['POST', new RegExp('^/session/[^/]+/url$')]];
+      driver.getProxyAvoidList = () => { return [['POST', new RegExp('^/session/[^/]+/url$')]]; };
       let res = await request({
         url: `http://localhost:8181/wd/hub/session/${sessionId}/url`,
         method: 'POST',
@@ -560,8 +561,7 @@ describe('MJSONWP', async () => {
 
     it('should fail if avoid proxy list is malformed in some way', async () => {
       async function badProxyAvoidanceList (list) {
-        driver.jwpProxyActive = true;
-        driver.jwpProxyAvoid = list;
+        driver.getProxyAvoidList = () => { return list; };
         let res = await request({
           url: `http://localhost:8181/wd/hub/session/${sessionId}/url`,
           method: 'POST',
@@ -586,8 +586,7 @@ describe('MJSONWP', async () => {
     });
 
     it('should avoid proxying non-session commands even if not in the list', async () => {
-      driver.jwpProxyActive = true;
-      driver.jwpProxyAvoid = [['POST', new RegExp('')]];
+      driver.getProxyAvoidList = () => { return [['POST', new RegExp('')]]; };
 
       let res = await request({
         url: `http://localhost:8181/wd/hub/status`,
@@ -606,8 +605,7 @@ describe('MJSONWP', async () => {
     });
 
     it('should avoid proxying deleteSession commands', async () => {
-      driver.jwpProxyActive = true;
-      driver.jwpProxyAvoid = [['POST', new RegExp('')]];
+      driver.getProxyAvoidList = () => { return [['POST', new RegExp('')]]; };
 
       driver.sessionId.should.equal(sessionId);
       let res = await request({
