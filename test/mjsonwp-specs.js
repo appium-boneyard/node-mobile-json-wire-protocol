@@ -340,7 +340,7 @@ describe('MJSONWP', async () => {
         simple: false
       });
 
-      res.statusCode.should.equal(500);
+      res.statusCode.should.equal(404);
       res.body.should.eql({
         status: 6,
         value: {
@@ -402,7 +402,7 @@ describe('MJSONWP', async () => {
         simple: false
       });
 
-      res.statusCode.should.equal(500);
+      res.statusCode.should.equal(404);
       res.body.status.should.equal(6);
       res.body.value.message.should.contain('session');
     });
@@ -419,7 +419,7 @@ describe('MJSONWP', async () => {
         simple: false
       });
 
-      res.statusCode.should.equal(500);
+      res.statusCode.should.equal(404);
       res.body.status.should.equal(6);
       res.body.value.message.should.contain('session');
     });
