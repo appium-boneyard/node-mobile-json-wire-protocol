@@ -92,8 +92,16 @@ class FakeDriver extends MobileJsonWireProtocol {
     return [attr, elementId, sessionId];
   }
 
+  async setValue (elementId, value) {
+    return value;
+  }
+
   async performTouch (...args) {
     return args;
+  }
+
+  async setFrame (frameId) {
+    return frameId;
   }
 
   proxyActive (/*sessionId*/) {
