@@ -8,7 +8,6 @@ chai.should();
 
 describe('MJSONWP', () => {
   describe('direct to driver', () => {
-    // let d = new FakeDriver();
 
     describe('setUrl', () => {
       it('should fail when no url passed', async () => {
@@ -19,6 +18,9 @@ describe('MJSONWP', () => {
       });
       it('should succeed when given url starting with http', async () => {
         (() => {validators.setUrl('http://appium.io');}).should.not.throw;
+      });
+      it('should succeed when given an android-like scheme', async () => {
+        (() => {validators.setUrl('content://contacts/people/1');}).should.not.throw;
       });
     });
     describe('implicitWait', () => {
