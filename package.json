@@ -26,7 +26,7 @@
     "appium-logger": "^2.0.0",
     "babel-runtime": "=5.8.24",
     "bluebird": "^2.10.0",
-    "es6-error": "^1.0.0",
+    "es6-error": "^2.0.2",
     "lodash": "^3.10.1",
     "source-map-support": "^0.3.2"
   },
