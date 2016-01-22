@@ -104,6 +104,10 @@ class FakeDriver extends MobileJsonWireProtocol {
     return frameId;
   }
 
+  async removeApp (app) {
+    return app;
+  }
+
   proxyActive (/*sessionId*/) {
     return false;
   }

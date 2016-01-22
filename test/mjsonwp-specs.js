@@ -142,7 +142,7 @@ describe('MJSONWP', async () => {
 
     // TODO pass this test
     // https://github.com/appium/node-mobile-json-wire-protocol/issues/3
-    it.skip('4xx responses should have content-type of text/plain', async () => {
+    it('4xx responses should have content-type of text/plain', async () => {
       let res = await request({
         url: 'http://localhost:8181/wd/hub/blargimargarita',
         method: 'GET',
@@ -150,7 +150,7 @@ describe('MJSONWP', async () => {
         simple: false // 404 errors fulfill the promise, rather than rejecting
       });
 
-      res.headers['content-type'].should.eql('text/plain');
+      res.headers['content-type'].should.include('text/plain');
     });
 
     it('should throw not yet implemented for unfilledout commands', async () => {
@@ -222,23 +222,45 @@ describe('MJSONWP', async () => {
     });
 
     describe('multiple sets of arguments', () => {
-      it('should allow moveto with element', async () => {
-        let res = await request({
-          url: 'http://localhost:8181/wd/hub/session/foo/moveto',
-          method: 'POST',
-          json: {element: '3'}
+      describe('optional', () => {
+        it('should allow moveto with element', async () => {
+          let res = await request({
+            url: 'http://localhost:8181/wd/hub/session/foo/moveto',
+            method: 'POST',
+            json: {element: '3'}
+          });
+          res.status.should.equal(0);
+          res.value.should.eql(['3', null, null]);
         });
-        res.status.should.equal(0);
-        res.value.should.eql(['3', null, null]);
+        it('should allow moveto with xoffset/yoffset', async () => {
+          let res = await request({
+            url: 'http://localhost:8181/wd/hub/session/foo/moveto',
+            method: 'POST',
+            json: {xoffset: 42, yoffset: 17}
+          });
+          res.status.should.equal(0);
+          res.value.should.eql([null, 42, 17]);
+        });
       });
-      it('should allow moveto with xoffset/yoffset', async () => {
-        let res = await request({
-          url: 'http://localhost:8181/wd/hub/session/foo/moveto',
-          method: 'POST',
-          json: {xoffset: 42, yoffset: 17}
+      describe('required', () => {
+        it('should allow removeApp with appId', async () => {
+          let res = await request({
+            url: 'http://localhost:8181/wd/hub/session/foo/appium/device/remove_app',
+            method: 'POST',
+            json: {appId: 42}
+          });
+          res.status.should.equal(0);
+          res.value.should.eql(42);
         });
-        res.status.should.equal(0);
-        res.value.should.eql([null, 42, 17]);
+        it('should allow removeApp with bundleId', async () => {
+          let res = await request({
+            url: 'http://localhost:8181/wd/hub/session/foo/appium/device/remove_app',
+            method: 'POST',
+            json: {bundleId: 42}
+          });
+          res.status.should.equal(0);
+          res.value.should.eql(42);
+        });
       });
     });
 
