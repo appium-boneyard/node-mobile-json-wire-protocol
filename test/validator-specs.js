@@ -22,6 +22,9 @@ describe('MJSONWP', () => {
       it('should succeed when given an android-like scheme', async () => {
         (() => {validators.setUrl('content://contacts/people/1');}).should.not.throw;
       });
+      it('should succeed when given an about scheme', async () => {
+        (() => {validators.setUrl('about:blank');}).should.not.throw;
+      });
     });
     describe('implicitWait', () => {
       it('should fail when given no ms', async () => {
