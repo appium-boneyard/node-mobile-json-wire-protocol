@@ -127,7 +127,6 @@ POST        | `/wd/hub/session/{sessionId}/appium/device/toggle_wifi`           
 POST        | `/wd/hub/session/{sessionId}/appium/device/toggle_location_services`   | Switch the state of the location service.
 POST        | `/wd/hub/session/{sessionId}/appium/device/open_notifications`         | Open the notifications pane on the device.
 POST        | `/wd/hub/session/{sessionId}/appium/device/start_activity`             | Start the specified activity on the device.
-POST        | `/wd/hub/session/{sessionId}/appium/simulator/touch_id`                | Simulate a successful or failed touch id event on the simulator.
 POST        | `/wd/hub/session/{sessionId}/appium/app/launch`                        | Launch the given application on the device.
 POST        | `/wd/hub/session/{sessionId}/appium/app/close`                         | Close the given application.
 POST        | `/wd/hub/session/{sessionId}/appium/app/reset`                         | Reset the device.
@@ -139,6 +138,7 @@ POST        | `/wd/hub/session/{sessionId}/appium/element/{elementId}/replace_va
 GET         | `/wd/hub/session/{sessionId}/appium/settings`                          | Retrieve a JSON hash of all the currently specified settings.
 POST        | `/wd/hub/session/{sessionId}/appium/settings`                          | Update the current setting on the device.
 POST        | `/wd/hub/session/{sessionId}/appium/receive_async_response`            | Callback url for asynchronous execution of JavaScript.
+POST        | `/wd/hub/session/{sessionId}/simulator/touch_id`                       | Simulate a successful or failed touch id event on the simulator.
 
 
 
